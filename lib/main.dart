@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_application_1/pages/data_page.dart';
 import 'package:flutter_application_1/pages/home_page.dart';
 import 'package:flutter_application_1/pages/location_page.dart';
 import 'package:flutter_application_1/utils/routes.dart';
@@ -22,9 +23,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: MyRoutes.HomePage,
+      initialRoute: MyRoutes.DataPage,
       routes: {
-        MyRoutes.HomePage: (context) => HomePage(),
+        MyRoutes.DataPage: (context) => DataPage(),
+
         // MyRoutes.LocationPage: (context) => LocationPage(MAC: null,),
       },
     );

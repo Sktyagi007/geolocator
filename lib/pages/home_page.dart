@@ -111,16 +111,24 @@ class _HomePageState extends State<HomePage> {
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
   }
+
   void dispose() {
     // Clean up the controller when the widget is disposed.
     myController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: BackButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         centerTitle: true,
         title: Text("Geolocator"),
       ),
@@ -181,13 +189,15 @@ class _HomePageState extends State<HomePage> {
             width: 100.0,
             child: ElevatedButton(
               child: Text('locate'),
-              onPressed: (checkLocation && checkPermission && _minutes>0)?() {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => LocationPage(
-                          minutes: _minutes,
-                          MAC: myController.text,
-                        )));
-              }: null,
+              onPressed: (checkLocation && checkPermission && _minutes > 0)
+                  ? () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => LocationPage(
+                                minutes: _minutes,
+                                MAC: myController.text,
+                              )));
+                    }
+                  : null,
             ),
           )
         ],
