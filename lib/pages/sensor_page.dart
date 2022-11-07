@@ -13,6 +13,46 @@ class _SensorPageState extends State<SensorPage> {
   List<String> res = [];
   var resp;
 
+  var aX;
+  var aY;
+  var aZ;
+  var curraX;
+  var curraY;
+  var curraZ;
+  // var prevaX;
+  // var prevaY;
+  // var prevaZ;
+
+  var agX;
+  var agY;
+  var agZ;
+  var curragX;
+  var curragY;
+  var curragZ;
+  // var prevagX;
+  // var prevagY;
+  // var prevagZ;
+
+  var gX;
+  var gY;
+  var gZ;
+  var currgX;
+  var currgY;
+  var currgZ;
+  // var prevgX;
+  // var prevgY;
+  // var prevgZ;
+
+  var mX;
+  var mY;
+  var mZ;
+  var currmX;
+  var currmY;
+  var currmZ;
+  // var prevmX;
+  // var prevmY;
+  // var prevmZ;
+  var back = false;
   List<double>? _accelerometerValues;
   List<double>? _userAccelerometerValues;
   List<double>? _gyroscopeValues;
@@ -22,21 +62,111 @@ class _SensorPageState extends State<SensorPage> {
   void initState() {
     // TODO: implement initState
     // startReadingSensors();
-    reading();
     super.initState();
+    readingAccel();
+
+    readingGyro();
+
+    readingAccelWith();
+
+    readingMagneto();
+    // timer();
   }
 
-  void reading() {
+  // void timer() {
+  // Timer.periodic(Duration(seconds: 5), (timer) async {
+  void readingAccel() {
     _streamSubscriptions.add(
       accelerometerEvents.listen(
         (AccelerometerEvent event) {
+          String x = event.x.toStringAsFixed(2);
+          String y = event.y.toStringAsFixed(2);
+          String z = event.z.toStringAsFixed(2);
+          curraX = x;
+          curraY = y;
+          curraZ = z;
+
+          // res.add(event.toString());
           setState(() {
-            _accelerometerValues = <double>[event.x, event.y, event.z];
+            // _accelerometerValues = <double>[event.x, event.y, event.z];
+            aX = curraX;
+            aY = curraY;
+            aZ = curraZ;
+          });
+          // dispose();
+        },
+      ),
+    );
+  }
+
+  void readingAccelWith() {
+    _streamSubscriptions.add(
+      userAccelerometerEvents.listen(
+        (UserAccelerometerEvent event) {
+          String x = event.x.toStringAsFixed(2);
+          String y = event.y.toStringAsFixed(2);
+          String z = event.z.toStringAsFixed(2);
+          curragX = x;
+          curragY = y;
+          curragZ = z;
+          // res.add(event.toString());
+          setState(() {
+            // _accelerometerValues = <double>[event.x, event.y, event.z];
+            agX = curragX;
+            agY = curragY;
+            agZ = curragZ;
+          });
+          // dispose();
+        },
+      ),
+    );
+  }
+
+  void readingGyro() {
+    _streamSubscriptions.add(
+      gyroscopeEvents.listen(
+        (GyroscopeEvent event) {
+          String x = event.x.toStringAsFixed(2);
+          String y = event.y.toStringAsFixed(2);
+          String z = event.z.toStringAsFixed(2);
+          currgX = x;
+          currgY = y;
+          currgZ = z;
+
+          // res.add(event.toString());
+          setState(() {
+            // _accelerometerValues = <double>[event.x, event.y, event.z];
+            gX = currgX;
+            gY = currgY;
+            gZ = currgZ;
+          });
+          // dispose();
+        },
+      ),
+    );
+  }
+
+  void readingMagneto() {
+    _streamSubscriptions.add(
+      magnetometerEvents.listen(
+        (MagnetometerEvent event) {
+          String x = event.x.toStringAsFixed(2);
+          String y = event.y.toStringAsFixed(2);
+          String z = event.z.toStringAsFixed(2);
+          currmX = x;
+          currmY = y;
+          currmZ = z;
+          setState(() {
+            mX = currmX;
+            mY = currmY;
+            mZ = currmZ;
           });
         },
       ),
     );
   }
+  // });
+  // }
 
   // void dispose() {
   //   super.dispose();
@@ -108,6 +238,12 @@ class _SensorPageState extends State<SensorPage> {
   //   }
   // }
 
+  void stop() {
+    for (final subscription in _streamSubscriptions) {
+      subscription.cancel();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final accelerometer =
@@ -121,19 +257,132 @@ class _SensorPageState extends State<SensorPage> {
         _magnetometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
     return Scaffold(
       appBar: AppBar(
-        title: Text("Sensor Data"),
-        centerTitle: true,
-      ),
+          title: Text("Sensor Data"),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          leading: BackButton(
+            onPressed: () {
+              stop();
+              // setState(() {
+              //   back = true;
+              // });
+              Navigator.pop(context);
+              // if (back) {
+              //   Navigator.pop(context);
+              // }
+            },
+          )),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Container(
-            child: Text(
-              _accelerometerValues.toString(),
-              style: const TextStyle(fontWeight: FontWeight.bold),
+        padding: EdgeInsets.all(7.5),
+        child: ListView(
+          children: [
+            SizedBox(height: 25),
+            Container(
+              margin: EdgeInsets.only(bottom: 15),
+              decoration: BoxDecoration(
+                  color: Color(0xFFDFE4EA),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 4,
+                        offset: Offset(0, 0))
+                  ]),
+              height: 100,
+              child: Center(
+                child: ListTile(
+                  title: Text(
+                    "AccelerometerEvent\n"
+                    "X:${aX} Y:${aY} Z:${aZ}",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
             ),
-          ),
+            SizedBox(height: 25),
+            Container(
+              margin: EdgeInsets.only(bottom: 15),
+              decoration: BoxDecoration(
+                  color: Color(0xFFDFE4EA),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 4,
+                        offset: Offset(0, 0))
+                  ]),
+              height: 100,
+              child: Center(
+                child: ListTile(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => SensorPage()));
+                  },
+                  title: Text(
+                    "AccelerometerEvent(G)\n"
+                    "X:${agX} Y:${agY} Z:${agZ}",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 25),
+            Container(
+              margin: EdgeInsets.only(bottom: 15),
+              decoration: BoxDecoration(
+                  color: Color(0xFFDFE4EA),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 4,
+                        offset: Offset(0, 0))
+                  ]),
+              height: 100,
+              child: Center(
+                child: ListTile(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => SensorPage()));
+                  },
+                  title: Text(
+                    "GyroscopeEvent\n"
+                    "X:${gX} Y:${gY} Z:${gZ}",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 25,
+            ),
+            Container(
+              margin: EdgeInsets.only(bottom: 15),
+              decoration: BoxDecoration(
+                  color: Color(0xFFDFE4EA),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 4,
+                        offset: Offset(0, 0))
+                  ]),
+              height: 100,
+              child: Center(
+                child: ListTile(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => SensorPage()));
+                  },
+                  title: Text(
+                    "MagnetometerEvent\n"
+                    "X:${mX} Y:${mY} Z:${mZ}",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       // floatingActionButton:
