@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/home2_page.dart';
 import 'package:flutter_application_1/pages/home_page.dart';
 import 'package:flutter_application_1/pages/sensor_page.dart';
 import 'package:flutter_application_1/utils/routes.dart';
@@ -95,7 +96,7 @@ class _DataPageState extends State<DataPage> {
                   ),
                   onTap: () {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => SensorPage()));
+                        MaterialPageRoute(builder: (context) => SecondHomePage()));
                   },
                   title: Text(
                     "Multi Sensor Data",

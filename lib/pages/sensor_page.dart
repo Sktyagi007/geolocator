@@ -1,9 +1,16 @@
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'dart:io';
 
 class SensorPage extends StatefulWidget {
-  const SensorPage({Key? key}) : super(key: key);
+  // const SensorPage({Key? key}) : super(key: key);
+  int minutes;
+  var MAC;
+
+  SensorPage({Key? key, required this.minutes, required this.MAC})
+      : super(key: key);
 
   @override
   State<SensorPage> createState() => _SensorPageState();
@@ -19,9 +26,6 @@ class _SensorPageState extends State<SensorPage> {
   var curraX;
   var curraY;
   var curraZ;
-  // var prevaX;
-  // var prevaY;
-  // var prevaZ;
 
   var agX;
   var agY;
@@ -29,9 +33,6 @@ class _SensorPageState extends State<SensorPage> {
   var curragX;
   var curragY;
   var curragZ;
-  // var prevagX;
-  // var prevagY;
-  // var prevagZ;
 
   var gX;
   var gY;
@@ -39,9 +40,6 @@ class _SensorPageState extends State<SensorPage> {
   var currgX;
   var currgY;
   var currgZ;
-  // var prevgX;
-  // var prevgY;
-  // var prevgZ;
 
   var mX;
   var mY;
@@ -49,19 +47,23 @@ class _SensorPageState extends State<SensorPage> {
   var currmX;
   var currmY;
   var currmZ;
-  // var prevmX;
-  // var prevmY;
-  // var prevmZ;
+
   var back = false;
   List<double>? _accelerometerValues;
   List<double>? _userAccelerometerValues;
   List<double>? _gyroscopeValues;
   List<double>? _magnetometerValues;
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
+  List<List<dynamic>> rows = [];
+  List<dynamic> row = [];
+  List<dynamic> row1 = [];
+  File sf = File('/storage/emulated/0/sensor.csv');
 
   void initState() {
     // TODO: implement initState
     // startReadingSensors();
+
+    initializeList();
     super.initState();
     readingAccel();
 
@@ -71,6 +73,22 @@ class _SensorPageState extends State<SensorPage> {
 
     readingMagneto();
     // timer();
+  }
+
+  void initializeList() {
+    row.add("AccelerometerEvent - x");
+    row.add("AccelerometerEvent - y");
+    row.add("AccelerometerEvent - z");
+    row.add("AccelerometerEvent(G) - x");
+    row.add("AccelerometerEvent(G) - y");
+    row.add("AccelerometerEvent(G) - z");
+    row.add("GyroscopeEvent- x");
+    row.add("GyroscopeEvent- y");
+    row.add("GyroscopeEvent- z");
+    row.add("MagnetometerEvent - x");
+    row.add("MagnetometerEvent - y");
+    row.add("MagnetometerEvent - z");
+    rows.add(row);
   }
 
   // void timer() {
@@ -85,6 +103,9 @@ class _SensorPageState extends State<SensorPage> {
           curraX = x;
           curraY = y;
           curraZ = z;
+          row1.add(curraX);
+          row1.add(curraY);
+          row1.add(curraZ);
 
           // res.add(event.toString());
           setState(() {
@@ -109,6 +130,9 @@ class _SensorPageState extends State<SensorPage> {
           curragX = x;
           curragY = y;
           curragZ = z;
+          row1.add(curragX);
+          row1.add(curragY);
+          row1.add(curragZ);
           // res.add(event.toString());
           setState(() {
             // _accelerometerValues = <double>[event.x, event.y, event.z];
@@ -132,6 +156,9 @@ class _SensorPageState extends State<SensorPage> {
           currgX = x;
           currgY = y;
           currgZ = z;
+          row1.add(currgX);
+          row1.add(currgY);
+          row1.add(currgZ);
 
           // res.add(event.toString());
           setState(() {
@@ -156,87 +183,36 @@ class _SensorPageState extends State<SensorPage> {
           currmX = x;
           currmY = y;
           currmZ = z;
+          row1.add(currmX);
+          row1.add(currmY);
+          row1.add(currmZ);
+          rows.add(row1);
+
+          // print(csv);
           setState(() {
             mX = currmX;
             mY = currmY;
             mZ = currmZ;
+            row1 = [];
           });
         },
       ),
     );
   }
-  // });
-  // }
 
-  // void dispose() {
-  //   super.dispose();
-  //   for (final subscription in _streamSubscriptions) {
-  //     subscription.cancel();
-  //   }
-  // }
-
-  // void startReadingSensors() {
-  //   try {
-  //     Timer.periodic(Duration(seconds: 3), (timer) {
-  //       accelerometerEvents.listen((AccelerometerEvent event) {
-  //         print(event);
-
-  //         res.add("accelerometer(With Gravity) --> " +
-  //             "X - " +
-  //             event.x.toString() +
-  //             "Y - " +
-  //             event.y.toString() +
-  //             "Z - " +
-  //             event.z.toString() +
-  //             "\n");
-  //       });
-  // [AccelerometerEvent (x: 0.0, y: 9.8, z: 0.0)]
-
-  // userAccelerometerEvents.listen((UserAccelerometerEvent event) {
-  //   print(event);
-  //   res.add("accelerometer(Without Gravity) --> " +
-  //       "X - " +
-  //       event.x.toString() +
-  //       "Y - " +
-  //       event.y.toString() +
-  //       "Z - " +
-  //       event.z.toString() +
-  //       "\n");
-  // });
-  // // [UserAccelerometerEvent (x: 0.0, y: 0.0, z: 0.0)]
-
-  // gyroscopeEvents.listen((GyroscopeEvent event) {
-  //   print(event);
-  //   res.add("Gyroscope --> " +
-  //       "X - " +
-  //       event.x.toString() +
-  //       "Y - " +
-  //       event.y.toString() +
-  //       "Z - " +
-  //       event.z.toString() +
-  //       "\n");
-  // });
-  // // [GyroscopeEvent (x: 0.0, y: 0.0, z: 0.0)]
-
-  // magnetometerEvents.listen((MagnetometerEvent event) {
-  //   print(event);
-  //   res.add("Magnetometer --> " +
-  //       "X - " +
-  //       event.x.toString() +
-  //       "Y - " +
-  //       event.y.toString() +
-  //       "Z - " +
-  //       event.z.toString() +
-  //       "\n");
-  // });
-  //       setState(() {
-  //         resp = res.toString();
-  //       });
-  //     });
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
+  void writeFile() async {
+    String csv = ListToCsvConverter().convert(rows);
+    try {
+      sf.writeAsString(csv);
+      // File('/storage/emulated/0/loc.txt')
+      //     .readAsString()
+      //     .then((String contents) {
+      //   print(contents);
+      // });
+    } catch (e) {
+      print(e);
+    }
+  }
 
   void stop() {
     for (final subscription in _streamSubscriptions) {
@@ -263,9 +239,10 @@ class _SensorPageState extends State<SensorPage> {
           leading: BackButton(
             onPressed: () {
               stop();
-              // setState(() {
-              //   back = true;
-              // });
+              writeFile();
+              setState(() {
+                back = true;
+              });
               Navigator.pop(context);
               // if (back) {
               //   Navigator.pop(context);
@@ -315,8 +292,8 @@ class _SensorPageState extends State<SensorPage> {
               child: Center(
                 child: ListTile(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => SensorPage()));
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (context) => SensorPage()));
                   },
                   title: Text(
                     "AccelerometerEvent(G)\n"
@@ -342,8 +319,8 @@ class _SensorPageState extends State<SensorPage> {
               child: Center(
                 child: ListTile(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => SensorPage()));
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (context) => SensorPage()));
                   },
                   title: Text(
                     "GyroscopeEvent\n"
@@ -371,8 +348,8 @@ class _SensorPageState extends State<SensorPage> {
               child: Center(
                 child: ListTile(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => SensorPage()));
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (context) => SensorPage()));
                   },
                   title: Text(
                     "MagnetometerEvent\n"

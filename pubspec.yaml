@@ -38,6 +38,8 @@ dependencies:
   geolocator: ^9.0.2
   dropdown_button2: ^1.8.9
   sensors_plus: ^2.0.1
+  intl: ^0.17.0
+  csv: ^5.0.1
 
 dev_dependencies:
   flutter_test:

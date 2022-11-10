@@ -26,6 +26,7 @@ class _MyAppState extends State<MyApp> {
       initialRoute: MyRoutes.DataPage,
       routes: {
         MyRoutes.DataPage: (context) => DataPage(),
+        
 
         // MyRoutes.LocationPage: (context) => LocationPage(MAC: null,),
       },
