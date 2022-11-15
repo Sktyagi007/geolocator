@@ -62,9 +62,9 @@ class _SensorPageState extends State<SensorPage> {
   void initState() {
     // TODO: implement initState
     // startReadingSensors();
-
-    initializeList();
     super.initState();
+    initializeList();
+    
     readingAccel();
 
     readingGyro();

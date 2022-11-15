@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
@@ -28,18 +28,42 @@ class _LocationPageState extends State<LocationPage> {
   late String intValue;
 
   var resp;
+  List<List<dynamic>> rows = [];
+  List<dynamic> row = [];
+  List<dynamic> row1 = [];
+  File sf = File('/storage/emulated/0/loc.csv');
 
- 
-
-  
   // List<dynamic> row = [];
   // String val = intValue.toString();
 
   @override
   void initState() {
     super.initState();
-    print(widget.MAC);
+    initializeList();
+    // print(widget.MAC);
     getPos(widget.minutes);
+  }
+
+  void initializeList() {
+    row.add("Lattitude");
+    row.add("Longitude");
+    row.add("Epoch-Time");
+    row.add("TimeStamp");
+    rows.add(row);
+  }
+
+  void writeFile() async {
+    String csv = ListToCsvConverter().convert(rows);
+    try {
+      sf.writeAsString(csv);
+      // File('/storage/emulated/0/loc.txt')
+      //     .readAsString()
+      //     .then((String contents) {
+      //   print(contents);
+      // });
+    } catch (e) {
+      print(e);
+    }
   }
 
   String getTimeStamp() {
@@ -50,38 +74,33 @@ class _LocationPageState extends State<LocationPage> {
   }
 
   // List<dynamic> associateList = [];
-  var uartFile = File('/storage/emulated/0/loc.txt');
+  // var uartFile = File('/storage/emulated/0/loc.txt');
 
   void getPos(minutes) {
-    Timer.periodic(const Duration(seconds: 10), (timer) async {
+    Timer.periodic(const Duration(seconds: 3), (timer) async {
       Position? position = await Geolocator.getCurrentPosition();
       String ans = position.toString();
       String timeS = getTimeStamp();
       String epoc = DateTime.now().millisecondsSinceEpoch.toString();
-      res.add(ans);
-      res.add(epoc);
-      res.add(timeS);
-      res.add("\n");
-      // print(position);
-      try {
-        await File('/storage/emulated/0/loc.txt').writeAsString(
-            ans + "," + epoc + "," + timeS + "\n",
-            mode: FileMode.append);
-        File('/storage/emulated/0/loc.txt')
-            .readAsString()
-            .then((String contents) {
-          print(contents);
-        });
-      } catch (e) {
-        print(e);
-      }
+      // res.add(epoc + " " + timeS + "-->" + ans);
+      String lat = position.latitude.toString();
+      String long = position.longitude.toString();
+      row1.add(lat);
+      row1.add(long);
+      row1.add(epoc);
+      row1.add(timeS);
+      row1.add("\n");
+      rows.add(row1);
+      print(position);
+
 
       if (back) {
         timer.cancel();
       }
       if (mounted) {
         setState(() {
-          resp = res.toString();
+          resp = rows.toString();
+          row1 = [];
         });
       }
     });
@@ -99,7 +118,7 @@ class _LocationPageState extends State<LocationPage> {
             setState(() {
               back = true;
             });
-
+            writeFile();
             if (back == true) {
               Navigator.pop(context);
             }
@@ -112,7 +131,7 @@ class _LocationPageState extends State<LocationPage> {
           scrollDirection: Axis.vertical,
           child: Container(
             child: Text(
-              res.toString().length <= 0 ? "" : res.toString(),
+              rows.toString().length <= 0 ? "" : rows.toString(),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
