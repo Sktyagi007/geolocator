@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +29,12 @@ class _LocationPageState extends State<LocationPage> {
   late String intValue;
 
   var resp;
-  List<List<dynamic>> rows = [];
+  List<dynamic> rows = [];
+  List<List<dynamic>> objRows = [];
   List<dynamic> row = [];
   List<dynamic> row1 = [];
   File sf = File('/storage/emulated/0/loc.csv');
+  Map<String, String> map = {};
 
   // List<dynamic> row = [];
   // String val = intValue.toString();
@@ -41,7 +44,7 @@ class _LocationPageState extends State<LocationPage> {
     super.initState();
     initializeList();
     // print(widget.MAC);
-    getPos(widget.minutes);
+    getPos(widget.MAC, widget.minutes);
   }
 
   void initializeList() {
@@ -49,11 +52,11 @@ class _LocationPageState extends State<LocationPage> {
     row.add("Longitude");
     row.add("Epoch-Time");
     row.add("TimeStamp");
-    rows.add(row);
+    objRows.add(row);
   }
 
-  void writeFile() async {
-    String csv = ListToCsvConverter().convert(rows);
+   void writeFile() async {
+    String csv = ListToCsvConverter().convert(objRows);
     try {
       sf.writeAsString(csv);
       // File('/storage/emulated/0/loc.txt')
@@ -76,7 +79,7 @@ class _LocationPageState extends State<LocationPage> {
   // List<dynamic> associateList = [];
   // var uartFile = File('/storage/emulated/0/loc.txt');
 
-  void getPos(minutes) {
+  void getPos(MAC, minutes) {
     Timer.periodic(const Duration(seconds: 3), (timer) async {
       Position? position = await Geolocator.getCurrentPosition();
       String ans = position.toString();
@@ -85,14 +88,20 @@ class _LocationPageState extends State<LocationPage> {
       // res.add(epoc + " " + timeS + "-->" + ans);
       String lat = position.latitude.toString();
       String long = position.longitude.toString();
+      map.putIfAbsent("mac", () => MAC);
+      map.putIfAbsent("Lattitude", () => lat);
+      map.putIfAbsent("Longitude", () => long);
+      map.putIfAbsent("Epoch_Time", () => epoc);
+      map.putIfAbsent("TimeStamp", () => timeS);
+      String str = json.encode(map);
       row1.add(lat);
       row1.add(long);
       row1.add(epoc);
       row1.add(timeS);
       row1.add("\n");
-      rows.add(row1);
+      objRows.add(row1);
+      rows.add(str);
       print(position);
-
 
       if (back) {
         timer.cancel();
@@ -118,8 +127,9 @@ class _LocationPageState extends State<LocationPage> {
             setState(() {
               back = true;
             });
-            writeFile();
+            // writeFile();
             if (back == true) {
+              writeFile();
               Navigator.pop(context);
             }
           },
