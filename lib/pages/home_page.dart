@@ -146,6 +146,13 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           SizedBox(height: 80),
+          const Padding(
+            padding: EdgeInsets.all(0),
+            child: Text(
+              "Duration",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+            ),
+          ),
           Padding(
             padding: EdgeInsets.all(15),
             child: DropdownButton(
@@ -176,9 +183,9 @@ class _HomePageState extends State<HomePage> {
           ),
           SizedBox(height: 80),
           SizedBox(
-            width: 100.0,
+            width: 150.0,
             child: ElevatedButton(
-              child: Text('enable loc'),
+              child: Text('Enable location'),
               onPressed: () {
                 _determinePosition();
               },
@@ -188,7 +195,7 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             width: 100.0,
             child: ElevatedButton(
-              child: Text('locate'),
+              child: Text('Locate'),
               onPressed: (checkLocation && checkPermission && _minutes > 0)
                   ? () {
                       Navigator.of(context).push(MaterialPageRoute(
