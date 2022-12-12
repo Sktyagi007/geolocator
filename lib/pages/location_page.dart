@@ -6,6 +6,8 @@ import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+
 
 /// Determine the current position of the device.
 /// When the location services are not enabled or permissions
@@ -55,7 +57,7 @@ class _LocationPageState extends State<LocationPage> {
     objRows.add(row);
   }
 
-   void writeFile() async {
+  void writeFile() async {
     String csv = ListToCsvConverter().convert(objRows);
     try {
       sf.writeAsString(csv);
@@ -76,11 +78,31 @@ class _LocationPageState extends State<LocationPage> {
     return formatted;
   }
 
+
+  postData(mac, lat, long, epoc, timeS) async {
+    try {
+      var data = jsonEncode([{
+        "mac": mac.toString(),
+        "Lattitude": lat.toString(),
+        "Longitude": long.toString(),
+        "Epoch_Time": epoc.toString(),
+        "TimeStamp": timeS.toString(),
+      }]);
+      var response = await http.post(
+          Uri.parse("http://app.napinotech.com:3000/app/v1/reference/stem"),
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: data);
+    } catch (e) {
+      print(e);
+    }
+  }
   // List<dynamic> associateList = [];
   // var uartFile = File('/storage/emulated/0/loc.txt');
 
   void getPos(MAC, minutes) {
-    Timer.periodic(const Duration(seconds: 3), (timer) async {
+    Timer.periodic(const Duration(seconds: 5), (timer) async {
       Position? position = await Geolocator.getCurrentPosition();
       String ans = position.toString();
       String timeS = getTimeStamp();
@@ -101,7 +123,8 @@ class _LocationPageState extends State<LocationPage> {
       row1.add("\n");
       objRows.add(row1);
       rows.add(str);
-      print(position);
+      postData(MAC, lat, long, epoc, timeS);
+      // print(rows);
 
       if (back) {
         timer.cancel();
