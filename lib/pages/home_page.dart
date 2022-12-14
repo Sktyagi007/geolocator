@@ -12,10 +12,14 @@ List<String> numbers() {
 }
 
 int splitMin(String value) {
-  var arr = value.split(' ');
-  int ans = int.parse(arr[0]);
-  print(ans);
-  return ans;
+  try {
+    var arr = value.split(' ');
+    int ans = int.parse(arr[0]);
+    print(ans);
+    return ans;
+  } on Exception {
+    return 0;
+  }
 }
 
 class HomePage extends StatefulWidget {
@@ -28,7 +32,7 @@ class _HomePageState extends State<HomePage> {
   final myController = TextEditingController();
   // var min;
   // List minutes = numbers();
-  String dropdownvalue = '1 min';
+  String dropdownvalue = 'Select';
   var mac;
   int _minutes = 0;
   bool checkLocation = false;
@@ -37,6 +41,7 @@ class _HomePageState extends State<HomePage> {
 
   // List of items in our dropdown menu
   var items = [
+    'Select',
     '1 min',
     '2 min',
     '3 min',
@@ -112,6 +117,7 @@ class _HomePageState extends State<HomePage> {
     // continue accessing the position of the device.
   }
 
+  @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
     myController.dispose();
@@ -185,10 +191,10 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             width: 150.0,
             child: ElevatedButton(
-              child: Text('Enable location'),
-              onPressed: () {
+              child: Text('Enable Permission'),
+              onPressed: !checkPermission ? () {
                 _determinePosition();
-              },
+              }:null,
             ),
           ),
           SizedBox(height: 80),
@@ -196,15 +202,37 @@ class _HomePageState extends State<HomePage> {
             width: 100.0,
             child: ElevatedButton(
               child: Text('Locate'),
-              onPressed: (checkLocation && checkPermission && _minutes > 0)
-                  ? () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => LocationPage(
-                                minutes: _minutes,
-                                MAC: myController.text,
-                              )));
-                    }
-                  : null,
+              onPressed: () {
+                // bool durationChecker = false;
+                if (!checkLocation && !checkPermission && dropdownvalue == "Select") {
+                  const snackBar =
+                      SnackBar(content: Text("Please Select Duration"));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                } else {
+                  if (dropdownvalue == "Select") {
+                    const snackBar =
+                        SnackBar(content: Text("Please Select Duration"));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
+                  if (checkLocation == false) {
+                    const snackBar =
+                        SnackBar(content: Text("Please click on Enable Permission"));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }else if (checkPermission == false) {
+                    const snackBar = SnackBar(
+                        content: Text(" click again on Enable Permission to give Permission"));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
+                }
+
+                if (checkLocation && checkPermission && _minutes > 0) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => LocationPage(
+                            minutes: _minutes,
+                            MAC: myController.text,
+                          )));
+                }
+              },
             ),
           )
         ],
